@@ -10,6 +10,7 @@ namespace Deliverer.Control
     {
         [SerializeField] float speed;
         [SerializeField] float rotateForce;
+        [SerializeField] float fuelUsage;
         Mover mover;
         float horizontalInput;
         float verticalInput;
@@ -24,7 +25,13 @@ namespace Deliverer.Control
             Move();
             if (verticalInput != 0)
             {
-                fuel.DecreaseFuel(1);
+                fuel.DecreaseFuel(fuelUsage);
+            }
+            if (fuel.fuel <= 0)
+            {
+                fuel.fuel = 0;
+                speed = 0;
+                rotateForce = 0;
             }
         }
 

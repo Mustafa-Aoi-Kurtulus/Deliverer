@@ -1,18 +1,37 @@
+using Deliverer.Resource;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Detection : MonoBehaviour
+namespace Deliverer.Core
 {
-    // Start is called before the first frame update
-    void Start()
+    public class Detection : MonoBehaviour
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        [SerializeField] OrderManager om;
+        [SerializeField] Fuel fuel;
+        void OnTriggerEnter2D(Collider2D collision)
+        {
+            if (collision.gameObject.CompareTag("Package"))
+            {
+                om.OrderPickup();
+            }
+            if (collision.gameObject.CompareTag("Arrow"))
+            {
+                om.DeliverOrder();
+            }
+            if (collision.gameObject.CompareTag("Fuel"))
+            {
+                fuel.canBuyFuel = true;
+            }
+        }
+        private void OnTriggerExit2D(Collider2D collision)
+        {
+            if (collision.gameObject.CompareTag("Fuel"))
+            {
+                fuel.canBuyFuel = false;
+                fuel.fuelBought = false;
+            }
+        }
     }
 }
+
