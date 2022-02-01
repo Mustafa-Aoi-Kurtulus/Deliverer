@@ -9,60 +9,63 @@ namespace Deliverer.Resource
 {
     public class ResultManager : MonoBehaviour
     {
-        [SerializeField] TextMeshProUGUI resultText;
-        [SerializeField] Button continueButton;
+        [Header("Variables")]   
         [SerializeField] int rentAmount;
         [SerializeField] int billAmount;
         [SerializeField] int foodAmount;
         [SerializeField] float timerAmount;
-
+        [SerializeField] bool moneyUpdated;
         int initialMoneyAmount;
-        bool moneyUpdated;
+        [Header("References")]
+        [SerializeField] TextMeshProUGUI resultText;
+        [SerializeField] Button continueButton;
+        
         void Awake()
         {
+            //Save the money, at the end of the day
             initialMoneyAmount = MoneyManager.money;
             moneyUpdated = false;
         }
-        void Update()
+        void Start()
         {
-            UpdateResultText();
-            UpdateMoney();
-            GameOver();
-        }
-
-        private void GameOver()
-        {
-            if (MoneyManager.money <= 0)
+            if (MoneyManager.money <= 20)
             {
-                continueButton.enabled = false;
-                float timer = timerAmount;
-                timer -= Time.deltaTime;
-                if (timer <= 0)
-                {
-                    resultText.text = "Game Over!";
-                    timer = 0;
-                }
+                GameOver();
+            }
+            else
+            {
+                UpdateMoney();
+                UpdateResultText();
             }
         }
-
+        void GameOver()
+        {
+            //If the GameOver is called, disable the continue button and change the text
+            continueButton.enabled = false;
+            resultText.text = "Game Over!";
+        }
         private void UpdateMoney()
         {
             if (!moneyUpdated)
             {
-                MoneyManager.money -= rentAmount;
-                MoneyManager.money -= billAmount;
-                MoneyManager.money -= foodAmount;
+                //If money isn't already updated, decrease money by rent, bill and food amount.
                 moneyUpdated = true;
+                MoneyManager.money -= (rentAmount + billAmount + foodAmount);
             }
         }
-
         private void UpdateResultText()
         {
             resultText.text = "Day " + TimeManager.dayCount + " is over." +
                 "\nYou have " + initialMoneyAmount + "$." +
-                "\nYou spent " + rentAmount + "$ for rent" + 
+                "\nYou spent " + rentAmount + "$ for rent." + 
                 "\nYou spent " + billAmount + "$ for bills." +
                 "\nYou spent " + foodAmount + "$ for food.";
+        }
+        public void ResetTimeIncreaseDayCount()
+        {
+            TimeManager.hours = 8;
+            TimeManager.minutes = 0;
+            TimeManager.dayCount += 1;
         }
     }
 }

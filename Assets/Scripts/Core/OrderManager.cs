@@ -7,55 +7,55 @@ namespace Deliverer.Core
 {
     public class OrderManager : MonoBehaviour
     {
-        [SerializeField] GameObject packagePrefab;
-        [SerializeField] GameObject arrowPrefab;
+        [Header("Point References")]
         [SerializeField] Transform packagePoint;
         [SerializeField] List<Transform> deliveryPoints;
+        [Header("Variables")]
         [SerializeField] int orderWorth;
-        GameObject currentPackage;
-        GameObject currentArrow;
+        [Header("Booleans")]
         [SerializeField] bool isPackageSpawned;
-        [SerializeField] bool isCarFree;
-
+        public bool isCarFree;
+        [Header("References")]
         [SerializeField] TimeManager tm;
         [SerializeField] MoneyManager money;
-
-        void Start()
-        {
-            isCarFree = true;
-        }
+        [SerializeField] GameObject package;
+        public GameObject currentDelivery;
         void Update()
         {
-            if (!tm.isDayOver)
+            //if the package isn't spawned & the isn't carrying a package
+            if (!isPackageSpawned && isCarFree)
             {
-                if (!isPackageSpawned && isCarFree)
-                {
-                    SpawnPackage();
-                }
+                //Spawn the package
+                SpawnPackage();
             }
         }
 
         public void OrderPickup()
         {
+            //Set the isCarFree false, destroy the package in front of the restaurant, Choose one of the delivery points to deliver.
             isCarFree = false;
-            Destroy(currentPackage);
+            package.SetActive(false);
             ConfirmAdress();
         }
 
         void SpawnPackage()
         {
+            //Set the isPackageSpawned true, Instantiate the package in front of the restaurant
             isPackageSpawned = true;
-            currentPackage = Instantiate(packagePrefab, packagePoint.position,Quaternion.identity);
+            package.SetActive(true);
         }
 
         void ConfirmAdress()
         {
+            //Choose randomly between the delivery points
             int randomIndex = Random.Range(0, deliveryPoints.Count);
-            currentArrow = Instantiate(arrowPrefab, deliveryPoints[randomIndex].position,deliveryPoints[randomIndex].rotation);
+            currentDelivery = deliveryPoints[randomIndex].gameObject;
+            currentDelivery.SetActive(true);
         }
         public void DeliverOrder()
         {
-            Destroy(currentArrow);
+            //Destroy the arrow at the delivery point, set the isCarFree true, Set the isPackageSpawned false, earn money
+            currentDelivery.SetActive(false);
             isCarFree = true;
             isPackageSpawned = false;
             money.EarnMoney(orderWorth);

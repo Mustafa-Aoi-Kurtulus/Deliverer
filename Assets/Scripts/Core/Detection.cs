@@ -9,15 +9,18 @@ namespace Deliverer.Core
     {
         [SerializeField] OrderManager om;
         [SerializeField] Fuel fuel;
+        [SerializeField] Audio sound;
+        [SerializeField] AudioSource source;
         void OnTriggerEnter2D(Collider2D collision)
         {
             if (collision.gameObject.CompareTag("Package"))
             {
                 om.OrderPickup();
             }
-            if (collision.gameObject.CompareTag("Arrow"))
+            if (collision.gameObject.CompareTag("Marker"))
             {
                 om.DeliverOrder();
+                sound.PlaySound(source);
             }
             if (collision.gameObject.CompareTag("Fuel"))
             {
@@ -32,6 +35,7 @@ namespace Deliverer.Core
                 fuel.fuelBought = false;
             }
         }
+
     }
 }
 
